@@ -21,13 +21,6 @@ jobs:
           sudo apt update
           sudo apt install -y software-properties-common curl gnupg lsb-release python3-pip python3.11-venv tmux g++-11 locales
 
-      - name: 🌐 Set Locale
-        run: |
-        #   sudo locale-gen en_US en_US.UTF-8
-        #   sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
-        #   export LANG=en_US.UTF-8
-        #   locale
-
       # ------------------------------
       # 🔑 Add ROS2 GPG Key & Repository
       # ------------------------------
@@ -100,37 +93,36 @@ jobs:
       # ------------------------------
       - name: 📦 Archive Build Artifacts
         run: |
-            cd ~/ros2_jazzy
-            tar -czvf ros2_jazzy_build.tar.gz install/
+          cd ~/ros2_jazzy
+          tar -czvf ros2_jazzy_build.tar.gz install/
 
       - name: 🚀 Upload Artifacts to GitHub Actions
         uses: actions/upload-artifact@v4
         with:
-            name: ros2_jazzy_build
-            path: ~/ros2_jazzy/ros2_jazzy_build.tar.gz
+          name: ros2_jazzy_build
+          path: ~/ros2_jazzy/ros2_jazzy_build.tar.gz
 
-# ------------------------------
-# 🚀 Release ROS2 Build
-# ------------------------------
-release:
-  needs: build_ros2
-  runs-on: ubuntu-latest
-  steps:
-    - name: 🚚 Download Build Artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: ros2_jazzy_build
-        path: ./artifacts
+  # ------------------------------
+  # 🚀 Release ROS2 Build
+  # ------------------------------
+  release:
+    needs: build_ros2
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚚 Download Build Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ros2_jazzy_build
+          path: ./artifacts
 
-    - name: 🏷️ Create GitHub Release
-      uses: softprops/action-gh-release@v1
-      with:
-        tag_name: v1.0.${{ github.run_number }}
-        name: ROS2 Jazzy Build v1.0.${{ github.run_number }}
-        body: |
-          ROS2 Jazzy Build completed successfully.
-          - Built on: ${{ github.run_id }}
-        draft: false
-        prerelease: false
-        files: |
-          ./artifacts/ros2_jazzy_build.tar.gz
+      - name: 🏷️ Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: v1.0.${{ github.run_number }}
+          name: ROS2 Jazzy Build v1.0.${{ github.run_number }}
+          body: |
+            ROS2 Jazzy Build completed successfully.
+            - Built on: ${{ github.run_id }}
+          draft: false
+          prerelease: false
+          files: ./artifacts/ros2_jazzy_build.tar.gz
