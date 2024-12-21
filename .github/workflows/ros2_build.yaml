@@ -49,7 +49,7 @@ jobs:
         run: |
           cd ~/ros2_jazzy
           source ~/ros2_jazzy/.venv/bin/activate
-          rm -rf src/
+          rm -rf ~/ros2_jazzy/src/*
           vcs import --input https://raw.githubusercontent.com/ros2/ros2/jazzy/ros2.repos src
 
       # ------------------------------
