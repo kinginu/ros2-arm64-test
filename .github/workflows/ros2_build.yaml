@@ -1,0 +1,96 @@
+name: ROS2 Jazzy Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build_ros2:
+    runs-on: self-hosted
+    steps:
+      # ------------------------------
+      # 🛠️ 基本セットアップ
+      # ------------------------------
+      - name: 📦 Update & Install Dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y software-properties-common curl gnupg lsb-release python3-pip python3.11-venv tmux g++-11
+
+      - name: 🌐 Set Locale
+        run: |
+          sudo locale-gen en_US en_US.UTF-8
+          sudo update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+          export LANG=en_US.UTF-8
+          locale
+
+      # ------------------------------
+      # 🔑 Add ROS2 GPG Key & Repository
+      # ------------------------------
+      - name: 🔑 Add ROS2 Repository & GPG Key
+        run: |
+          sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+          sudo apt update
+
+      # ------------------------------
+      # 🐍 Python Virtual Environment
+      # ------------------------------
+      - name: 🐍 Setup Python Virtual Environment
+        run: |
+          mkdir -p ~/ros2_jazzy/src
+          cd ~/ros2_jazzy
+          python3 -m venv .venv
+          source ~/ros2_jazzy/.venv/bin/activate
+          pip install --upgrade pip
+          pip install vcstool catkin_pkg pytest empy pybind11
+
+      # ------------------------------
+      # 📥 Get ROS2 Source Code
+      # ------------------------------
+      - name: 📥 Download ROS2 Source Code
+        run: |
+          cd ~/ros2_jazzy
+          vcs import --input https://raw.githubusercontent.com/ros2/ros2/jazzy/ros2.repos src
+
+      # ------------------------------
+      # 📚 Install Dependencies
+      # ------------------------------
+      - name: 📚 Install Dependencies with rosdep
+        run: |
+          sudo rosdep init || true
+          rosdep update
+          rosdep install --from-paths src --ignore-src -y --skip-keys "fastcdr rti-connext-dds-6.0.1 urdfdom_headers"
+
+      # ------------------------------
+      # 🛠️ Build ROS2
+      # ------------------------------
+      - name: 🛠️ Build ROS2 with Colcon
+        run: |
+          cd ~/ros2_jazzy
+          source ~/ros2_jazzy/.venv/bin/activate
+          rm -rf build/ install/ log/
+          colcon build --symlink-install --parallel-workers 0 || true
+
+      # ------------------------------
+      # 🔄 Retry Failed Packages
+      # ------------------------------
+      - name: 🔄 Retry Building Failed Packages
+        run: |
+          cd ~/ros2_jazzy
+          source ~/ros2_jazzy/.venv/bin/activate
+          colcon build --packages-select test_rclcpp || true
+          colcon build --packages-select rviz_default_plugins || true
+
+      # ------------------------------
+      # ✅ Verify Build
+      # ------------------------------
+      - name: ✅ Verify Build
+        run: |
+          cd ~/ros2_jazzy
+          source ~/ros2_jazzy/.venv/bin/activate
+          colcon test
