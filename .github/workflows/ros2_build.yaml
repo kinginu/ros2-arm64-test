@@ -94,3 +94,43 @@ jobs:
           cd ~/ros2_jazzy
           source ~/ros2_jazzy/.venv/bin/activate
           colcon test
+
+      # ------------------------------
+      # 📦 Upload Build Artifacts
+      # ------------------------------
+      - name: 📦 Archive Build Artifacts
+      run: |
+        cd ~/ros2_jazzy
+        tar -czvf ros2_jazzy_build.tar.gz install/
+
+      - name: 🚀 Upload Artifacts to GitHub Actions
+        uses: actions/upload-artifact@v4
+        with:
+            name: ros2_jazzy_build
+            path: ~/ros2_jazzy/ros2_jazzy_build.tar.gz
+
+# ------------------------------
+# 🚀 Release ROS2 Build
+# ------------------------------
+release:
+  needs: build_ros2
+  runs-on: ubuntu-latest
+  steps:
+    - name: 🚚 Download Build Artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: ros2_jazzy_build
+        path: ./artifacts
+
+    - name: 🏷️ Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: v1.0.${{ github.run_number }}
+        name: ROS2 Jazzy Build v1.0.${{ github.run_number }}
+        body: |
+          ROS2 Jazzy Build completed successfully.
+          - Built on: ${{ github.run_id }}
+        draft: false
+        prerelease: false
+        files: |
+          ./artifacts/ros2_jazzy_build.tar.gz
