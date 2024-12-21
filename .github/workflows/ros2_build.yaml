@@ -99,9 +99,9 @@ jobs:
       # 📦 Upload Build Artifacts
       # ------------------------------
       - name: 📦 Archive Build Artifacts
-      run: |
-        cd ~/ros2_jazzy
-        tar -czvf ros2_jazzy_build.tar.gz install/
+        run: |
+            cd ~/ros2_jazzy
+            tar -czvf ros2_jazzy_build.tar.gz install/
 
       - name: 🚀 Upload Artifacts to GitHub Actions
         uses: actions/upload-artifact@v4
