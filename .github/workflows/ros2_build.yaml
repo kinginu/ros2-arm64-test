@@ -19,7 +19,7 @@ jobs:
       - name: 📦 Update & Install Dependencies
         run: |
           sudo apt update
-          sudo apt install -y software-properties-common curl gnupg lsb-release python3-pip python3.11-venv tmux g++-11 locales
+          sudo apt install -y git software-properties-common curl gnupg lsb-release python3-pip python3.11-venv tmux g++-11 locales
 
       # ------------------------------
       # 🔑 Add ROS2 GPG Key & Repository
