@@ -48,6 +48,7 @@ jobs:
       - name: 📥 Download ROS2 Source Code
         run: |
           cd ~/ros2_jazzy
+          source ~/ros2_jazzy/.venv/bin/activate
           vcs import --input https://raw.githubusercontent.com/ros2/ros2/jazzy/ros2.repos src
 
       # ------------------------------
