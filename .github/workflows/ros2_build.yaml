@@ -9,6 +9,9 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: write 
+
 jobs:
   build_ros2:
     runs-on: self-hosted
@@ -143,6 +146,8 @@ jobs:
   release:
     needs: build_ros2
     runs-on: ubuntu-latest
+    permissions:
+      contents: write 
     steps:
       - name: 🚚 Download Build Artifact
         uses: actions/download-artifact@v4
