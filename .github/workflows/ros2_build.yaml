@@ -9,19 +9,13 @@ on:
       - main
   workflow_dispatch:
 
-permissions:
-  contents: write 
+# permissions:
+#   contents: write 
 
 jobs:
   build_ros2:
     runs-on: self-hosted
     steps:
-    #   - name: 🛠️ Force Git to Use HTTP/1.1
-    #     run: |
-    #       git config --global http.version HTTP/1.1
-    #       git config --global http.postBuffer 524288000
-    #       git config --global http.lowSpeedLimit 0
-    #       git config --global http.lowSpeedTime 999999
 
       # ------------------------------
       # 🛠️ 基本セットアップ
@@ -29,7 +23,7 @@ jobs:
       - name: 📦 Update & Install Dependencies
         run: |
           sudo apt update
-          sudo apt install -y git software-properties-common curl gnupg lsb-release python3-pip python3.11-venv tmux g++-11 locales
+          sudo apt install -y git software-properties-common curl gnupg lsb-release python3-pip python3.11-venv g++-11 locales
 
       # ------------------------------
       # 🔑 Add ROS2 GPG Key & Repository
@@ -146,8 +140,6 @@ jobs:
   release:
     needs: build_ros2
     runs-on: ubuntu-latest
-    permissions:
-      contents: write 
     steps:
       - name: 🚚 Download Build Artifact
         uses: actions/download-artifact@v4
