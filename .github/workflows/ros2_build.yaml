@@ -64,6 +64,7 @@ jobs:
       # ------------------------------
       - name: 📚 Install Dependencies with rosdep
         run: |
+          sudo apt -y upgrade
           sudo rosdep init || true
           rosdep update
           rosdep install --from-paths src --ignore-src -y --skip-keys "fastcdr rti-connext-dds-6.0.1 urdfdom_headers"
