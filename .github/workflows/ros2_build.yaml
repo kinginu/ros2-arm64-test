@@ -99,7 +99,7 @@ jobs:
         run: |
           cd ~/ros2_jazzy
           source ~/ros2_jazzy/.venv/bin/activate
-          rm -rf build/ install/ log/
+          # rm -rf build/ install/ log/
           colcon build --symlink-install --parallel-workers 0 || true
 
     #   # ------------------------------
