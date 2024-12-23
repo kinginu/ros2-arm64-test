@@ -85,6 +85,8 @@ jobs:
       # ------------------------------
       - name: 📚 Install Dependencies with rosdep
         run: |
+          cd ~/ros2_jazzy
+          source ~/ros2_jazzy/.venv/bin/activate
           sudo apt -y upgrade
           sudo rosdep init || true
           rosdep update
