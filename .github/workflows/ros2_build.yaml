@@ -102,15 +102,15 @@ jobs:
           rm -rf build/ install/ log/
           colcon build --symlink-install --parallel-workers 0 || true
 
-      # ------------------------------
-      # 🔄 Retry Failed Packages
-      # ------------------------------
-      - name: 🔄 Retry Building Failed Packages
-        run: |
-          cd ~/ros2_jazzy
-          source ~/ros2_jazzy/.venv/bin/activate
-          colcon build --packages-select test_rclcpp || true
-          colcon build --packages-select rviz_default_plugins || true
+    #   # ------------------------------
+    #   # 🔄 Retry Failed Packages
+    #   # ------------------------------
+    #   - name: 🔄 Retry Building Failed Packages
+    #     run: |
+    #       cd ~/ros2_jazzy
+    #       source ~/ros2_jazzy/.venv/bin/activate
+    #       colcon build --packages-select test_rclcpp || true
+    #       colcon build --packages-select rviz_default_plugins || true
 
       # ------------------------------
       # ✅ Verify Build
